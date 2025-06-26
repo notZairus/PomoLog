@@ -7,7 +7,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+@font-face {
+    font-family: "Silkscreen";
+    src: url("/public/fonts/Silkscreen-Regular.ttf");
+}
+
+
 @theme {
+    --font-silkscreen: 'Silkscreen';
     --font-sans:
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
@@ -150,7 +158,7 @@
 
 @layer base {
     * {
-        @apply box-border;
+        @apply box-border font-mono;
     }
 
     body {
