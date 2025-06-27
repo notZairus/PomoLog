@@ -122,7 +122,7 @@
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
+    --background: #0A0A0A;
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.145 0 0);
     --card-foreground: oklch(0.985 0 0);
@@ -164,4 +164,9 @@
     body {
         @apply bg-background text-foreground;
     }
+}
+
+
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none;
 }

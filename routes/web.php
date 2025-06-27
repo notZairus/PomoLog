@@ -4,8 +4,16 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('main');
+    return Inertia::render('welcome');
 })->name('home');
+
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/pomodoro', function () {
+        return Inertia::render('pomodoro');
+    });
+})->name('pomodoro');
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {   

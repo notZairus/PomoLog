@@ -41,3 +41,17 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+
+
+
+export interface State {
+  name: "Focus Session" | "Short Break" | "Long Break",
+  time: number
+}
+
+export interface StatesType {
+  pomodoro: State,
+  short_break: State,
+  long_break: State,
+}
