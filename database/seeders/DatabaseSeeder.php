@@ -2,11 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Subject;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Database\Seeders\StudySessionSeeder;
+
+use App\Models\User;
+use App\Models\Subject;
+use App\Models\StudySession;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,7 +25,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Subject::factory(10)->create();
+        StudySession::factory(10)->create();
 
-        $this->call(StudySessionSeeder::class);
     }
 }
