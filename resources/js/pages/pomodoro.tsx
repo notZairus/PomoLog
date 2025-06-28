@@ -7,9 +7,11 @@ import Modal from "@/components/modal";
 import { Textarea } from '@/components/ui/textarea';
 import { toMinutesFormat } from '@/helper';
 import { type BreadcrumbItem } from '@/types';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSoundContext } from '@/contexts/SoundContext';
 import states from '@/constants/states';
+import { sleep } from '@/helper';
+import axios from 'axios';
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -26,11 +28,14 @@ export default function pomodoro() {
     setTimer,
     start,
     setStart,
+    setState,
     pomodoroCount,
     setPomodoroCount,
     notice, 
     setNotice,
+    started
   } = usePomodoroContext();
+
 
   const {
     startBeepingSound, pauseBeepingSound, stopBeepingSound,
@@ -40,22 +45,37 @@ export default function pomodoro() {
 
 
   function pausePlayTimer() {
+    if (!started.current) {
+      console.log("first pomodoro since log in");
+    }
+
     if (start) pauseBeepingSound();
     if (timer <= 5 && !start) startBeepingSound();
     setStart((prev: boolean) => !prev);
   }
 
-
-
   useEffect(() => {
-    setTimer(state.time * 60);
-  }, [state]);
+    if (!started.current) return;
+
+    axios.post('http://localhost:8000/pomodoro')
+    .then(response => console.log(response.data));
+
+
+  }, [started.current]);
+
 
   useEffect(() => {
     if (!start) return;
+
+
+    if (started) {
+      started.current = true;
+    }
+
     const interval = setInterval(() => { setTimer(prev => Math.floor(prev - 1))}, 1000);
     return () => clearInterval(interval);
   }, [start]);
+
 
   useEffect(() => {
     if (timer === 5) {
@@ -65,14 +85,31 @@ export default function pomodoro() {
 
     if (timer === 0) {
       setStart(false);
+      setNotice(true);
       
       pauseBeepingSound();
       startFlashSound();
 
       setPomodoroCount(prev => state === states.pomodoro ? prev + 1 : prev);
-      setNotice(true);
     }
   }, [timer]); 
+
+  
+  useEffect(() => {
+    if (!notice) return;
+
+    sleep(5000).then(() => {
+      if (state === states.pomodoro) {
+        setState(pomodoroCount < 4 ? states.short_break : states.long_break);
+        setTimer(pomodoroCount < 4 ? states.short_break.time : states.long_break.time);
+      } else {
+        setState(states.pomodoro);
+        setTimer(states.pomodoro.time);
+      }
+      setNotice(false);
+      setStart(true);      
+    });
+  }, [notice])
 
   
   return (
@@ -80,52 +117,52 @@ export default function pomodoro() {
       <AppLayout breadcrumbs={breadcrumbs}>
         <Head title="Pomodoro" />
         <Modal isOpen={notice} handleClose={() => setNotice(false)}>
-          <div className='bg-black border px-8 py-4 rounded flex items-center justify-center'>
+          <div className='bg-black border px-8 py-4 rounded-xl'>
             <p>{state.name} Ended.</p>
+            {state == states.pomodoro && <p>You can log what you learn...</p>}
           </div>
         </Modal>
 
         <div className='w-full text-center'>
-
           <div className='w-full flex flex-wrap justify-center items-start p-8 gap-x-8 gap-y-12'>
-            
-            <div className='bg-background w-full h-min md:w-2/5 lg:w-2/6 space-y-4 p-2 border rounded'>
-              <div className='w-full border rounded p-4 text-primary'>
+            <div className='bg-background w-full h-min md:w-2/5 lg:w-2/6 space-y-4 p-2 border rounded-xl'>
+              <div className='w-full border rounded-xl p-4 text-primary'>
                 Completed Pomodoros: <span className='text-lg'>{pomodoroCount}</span>
               </div>
       
-              <div className='w-full border rounded p-4 text-primary'>
+              <div className='w-full border rounded-xl p-4 text-primary'>
                 Phase: <span className='text-lg'>{state.name}</span>
               </div>
       
-              <div className='w-full border text-primary p-2 rounded'>
+              <div className='w-full border text-primary p-2 rounded-xl'>
                 <h1 className='text-2xl'>PomoLog</h1>
                 <p className='tracking-wide text-sm text-gray-400'>
                   Pomodoro with a twist of log.
                 </p>
-                <div className='mt-8 rounded w-min mx-auto'>
+                <div className='mt-8 rounded-xl w-min mx-auto'>
                   <span className='text-5xl'>
                     { toMinutesFormat(timer) }
                   </span>
                 </div>
-                <Button className='w-full mt-8 rounded cursor-pointer' onClick={pausePlayTimer}>
-                  {start ? "Pause" : "Continue"} Pomodoro
+                 <Button className='w-full mt-8 rounded-xl cursor-pointer' onClick={pausePlayTimer}>  {/* BUTTON*/}
+                  {!started.current ? "Start" : start ? "Pause" : "Continue"} Pomodoro
                 </Button>
               </div>
             </div>
             
-            <div className='bg-background flex-1 min-w-1/2 p-2 space-y-4 border rounded'>
+            <div className='bg-background flex-1 min-w-1/2 p-2 space-y-4 border rounded-xl'>
               <div className='w-full h-24 flex gap-4 items-start'>
                 <Textarea 
                   className='border border-primary flex-1 resize-none h-full scrollbar-hidden' 
                   placeholder='type your logs here.'
+                  disabled={state === states.pomodoro}
                 />
                 <Button className='aspect-square h-16'>
                   Log
                 </Button>
               </div>
 
-              <div className='w-full min-h-40 border rounded'>
+              <div className='w-full min-h-40 border rounded-xl'>
                 <p className='mt-2 border-b'>Logs</p>
                 <div>
                     // logs container

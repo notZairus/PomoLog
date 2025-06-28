@@ -7,6 +7,7 @@ import states from '@/constants/states';
 
 interface PomodoroContextType {
     state: State,
+    setState: React.Dispatch<React.SetStateAction<State>>,
     timer: number, 
     setTimer: React.Dispatch<React.SetStateAction<number>>,
     start: boolean, 
@@ -14,7 +15,8 @@ interface PomodoroContextType {
     pomodoroCount: number,
     setPomodoroCount: React.Dispatch<React.SetStateAction<number>>,
     notice: boolean, 
-    setNotice: React.Dispatch<React.SetStateAction<boolean>>
+    setNotice: React.Dispatch<React.SetStateAction<boolean>>,
+    started: React.RefObject<boolean>
 }
 
 
@@ -23,15 +25,17 @@ export const PomodoroContext = createContext<PomodoroContextType | null>(null);
 
 export function PomodoroContextProvider({ children }: { children: React.ReactNode }) {
     const [state, setState] = useState<State>(states.pomodoro);
-    const [timer, setTimer] = useState<number>(state.time * 60);
+    const [timer, setTimer] = useState<number>(state.time);
     const [start, setStart] = useState<boolean>(false);
     const [pomodoroCount, setPomodoroCount] = useState<number>(0);
     const [notice, setNotice] = useState<boolean>(false);
+    const started = useRef<boolean>(false);
 
 
     return (
         <PomodoroContext.Provider value={{
             state,
+            setState,
             timer, 
             setTimer,
             start, 
@@ -39,7 +43,8 @@ export function PomodoroContextProvider({ children }: { children: React.ReactNod
             pomodoroCount,
             setPomodoroCount,
             notice, 
-            setNotice
+            setNotice,
+            started: started
         }} > 
             { children }
         </PomodoroContext.Provider>

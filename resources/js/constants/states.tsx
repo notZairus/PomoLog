@@ -1,18 +1,22 @@
 import { StatesType } from "@/types";
 
+function toMinutes(minutes: number):number {
+  return minutes * 60;
+}
+ 
 
 const states: StatesType = {
   pomodoro: {
     name: "Focus Session",
-    time: .3,
+    time: toMinutes(1),
   },
   short_break: {
     name: "Short Break",
-    time: .2,
+    time: toMinutes(1),
   },
   long_break: {
     name: "Long Break",
-    time: .1,
+    time: toMinutes(1),
   }
 }
 

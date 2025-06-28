@@ -158,7 +158,7 @@
 
 @layer base {
     * {
-        @apply box-border font-mono;
+        @apply box-border font-mono border-primary;
     }
 
     body {
