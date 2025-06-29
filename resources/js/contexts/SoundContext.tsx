@@ -20,7 +20,9 @@ const SoundContext = createContext<SoundContextType | null>(null);
 
 
 export function SoundContextProvider({ children }: { children: React.ReactNode }) {
-    const [startBeepingSound, { stop: stopBeepingSound, pause: pauseBeepingSound}] = useSound(beepingSound);
+    const [startBeepingSound, { stop: stopBeepingSound, pause: pauseBeepingSound}] = useSound(beepingSound, {
+        loop: true
+    });
     const [startFlashSound, { stop: stopFlashSound, pause: pauseFlashSound}] = useSound(flashSound);
 
 

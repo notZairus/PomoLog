@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\StudySession;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon as DateTime;
+use Carbon\Carbon;
+
+use App\Models\Pomodoro;
+use App\Models\StudySession;
 
 
 
@@ -18,7 +20,22 @@ class PomodoroController extends Controller
      */
     public function index()
     {
-        return Inertia::render('pomodoro');
+        $study_session = Auth::user()->study_sessions->last();
+        $subjects = Auth::user()->subjects->map->only(['id', 'name']);
+
+        $ss = StudySession::with('pomodoros')->where('user_id', Auth::user()->id)->get();
+        $pomodoro_count = 0;
+
+        foreach ($ss as $sss) {
+            $pomodoro_count += count($sss->pomodoros);
+        }
+        
+
+        return Inertia::render('pomodoro', [
+            'studySession' => $study_session,
+            'subjects' => $subjects,
+            'completedPomodoro' => $pomodoro_count
+        ]);
     }
 
     /**
@@ -34,29 +51,12 @@ class PomodoroController extends Controller
      */
     public function store(Request $request)
     {
-        // fetch the last inserted study session of the authenticated user;
-        $study_sessions = Auth::user()->study_sessions;
-        $latest_study_session = $study_sessions[count($study_sessions) - 1];
+        // fetch the latest studysession
+        $study_session = Auth::user()->study_sessions->last();
 
-        // compare the date
-        $date_of_last_study_session = new \DateTime($latest_study_session->date);
-        $datetime_today = new \DateTime();
-
-        // if the same, return the eagerloaded latest study session. 
-        if ($date_of_last_study_session->format('y-m-d') === $datetime_today->format('y-m-d')) {
-            return response()->json([
-                'studySession' => StudySession::with('user')->find($latest_study_session->id)
-            ]);
-        }
-
-        // else, create new studysession then eagerload it then return it.
-        $new_ss = StudySession::create([
-            'user_id' => Auth::user()->id,
-            'date' => $datetime_today->format('y-m-d')
-        ]);
-        
-        return response()->json([
-            'studySession' => StudySession::with('user')->find($new_ss->id),
+        Pomodoro::create([
+            'study_session_id' => $study_session->id,
+            'subject_id' => $request->get('subject_id'),
         ]);
     }
 

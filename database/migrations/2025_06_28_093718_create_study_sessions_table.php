@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignIdFor(User::class)
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->date('date');
             $table->timestamps();
         }); 
     }

@@ -18,7 +18,9 @@ createInertiaApp({
         root.render(
             <SoundContextProvider>
                 <PomodoroContextProvider>
-                    <App {...props} />
+                        
+                        <App {...props} />
+    
                 </PomodoroContextProvider>
             </SoundContextProvider>
         );

@@ -55,3 +55,14 @@ export interface StatesType {
   short_break: State,
   long_break: State,
 }
+
+
+export interface StudySession {
+    id: number,
+    created_at: string
+}
+
+export type Subject = {
+    id: number,
+    name: string
+}
