@@ -29,12 +29,22 @@ class PomodoroController extends Controller
         foreach ($ss as $sss) {
             $pomodoro_count += count($sss->pomodoros);
         }
-        
+
+        // get the notes
+        $notes = [];
+
+        $pomodoros_of_the_current_study_session = Pomodoro::with('notes')->where('study_session_id', $study_session->id)->get();
+        foreach($pomodoros_of_the_current_study_session as $pomodoro) {
+            if (count($pomodoro->notes) >= 1) {
+                array_push($notes, ...$pomodoro->notes);
+            }
+        }
 
         return Inertia::render('pomodoro', [
             'studySession' => $study_session,
             'subjects' => $subjects,
-            'completedPomodoro' => $pomodoro_count
+            'completedPomodoro' => $pomodoro_count,
+            'notes' => $notes
         ]);
     }
 

@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import Modal from "@/components/modal";
 import { Textarea } from '@/components/ui/textarea';
 import { toMinutesFormat } from '@/helper';
-import { type BreadcrumbItem, StudySession, Subject } from '@/types';
-import { useEffect } from 'react';
+import { type BreadcrumbItem, StudySession, Subject, Note } from '@/types';
+import { FormEvent, useEffect } from 'react';
 import states from '@/constants/states';
 import { sleep } from '@/helper';
 import {
@@ -32,13 +32,20 @@ const breadcrumbs: BreadcrumbItem[] = [
 type UsePageProps = {
   studySession: StudySession,
   subjects: Subject[],
-  completedPomodoro: number 
+  completedPomodoro: number,
+  notes: Note[]
 }
 
 export default function pomodoro() {
-  const { studySession, subjects, completedPomodoro } = usePage<UsePageProps>().props;
+  const { studySession, subjects, completedPomodoro, notes } = usePage<UsePageProps>().props;
+
   const studySessionForm = useForm();
-  const pomodoroForm = useForm({ 'subject_id': 0 });
+  const pomodoroForm = useForm({ 
+    'subject_id': 0 
+  });
+  const noteForm = useForm({
+    'note': ""
+  })
   
   const { 
     state, setState,
@@ -60,6 +67,13 @@ export default function pomodoro() {
     if (start) pauseBeepingSound();
     if (timer <= 5 && !start) startBeepingSound();
     setStart((prev: boolean) => !prev);
+  }
+
+  function submitNote(e: FormEvent) {
+    e.preventDefault();
+    noteForm.post('/notes', {
+      onFinish: () => noteForm.reset()
+    })
   }
   
 
@@ -120,7 +134,6 @@ export default function pomodoro() {
     });
   }, [notice])
 
-  
   return (
     <>
       <Modal isOpen={notice} handleClose={() => setNotice(false)}>
@@ -141,7 +154,7 @@ export default function pomodoro() {
               </div>
 
               <div className='w-full border rounded-xl p-4 text-primary'>
-                Completed Pomodoros: <span className='text-lg'>{pomodoroCount}</span>
+                Pomodoros: <span className='text-lg'>{pomodoroCount}</span>
               </div>
       
               <div className='w-full border rounded-xl p-4 text-primary'>
@@ -151,7 +164,7 @@ export default function pomodoro() {
               <div className='w-full border text-primary p-2 rounded-xl'>
                 <h1 className='text-2xl'>PomoLog</h1>
                 <p className='tracking-wide text-sm text-gray-400'>
-                  Pomodoro with a twist of log.
+                  Focused work. Captured mind.
                 </p>
                 <div className='mt-8 rounded-xl w-min mx-auto'>
                   <span className='text-5xl'>
@@ -179,28 +192,52 @@ export default function pomodoro() {
                       </SelectItem>
                     ))
                   }
-
                   <SubjectForm />
                   
                 </SelectContent>
               </Select>
             
-              <div className='w-full h-24 flex gap-4 items-start'>
-                <Textarea 
-                  className='border border-primary flex-1 resize-none h-full scrollbar-hidden' 
-                  placeholder='type your logs here.'
-                  disabled={state === states.pomodoro}
-                />
-                <Button className='aspect-square h-16'>
-                  Log
-                </Button>
+              <div className='w-full'>
+                <form onSubmit={submitNote} className='h-24 flex gap-4 items-start'>
+
+                    <Textarea 
+                      value={noteForm.data.note}
+                      onChange={(e) => noteForm.setData('note', e.target.value)}
+                      className='border border-primary resize-none flex-1 h-full scrollbar-hidden' 
+                      placeholder='type your logs here.'
+                      disabled={state === states.pomodoro}
+                    />
+                  <Button disabled={state === states.pomodoro} className='aspect-square h-16'>
+                    Log
+                  </Button>
+                </form>
+                
+                {noteForm.errors.note && <p className='text-red-600 text-sm text-left ml-1 mt-1'>{ noteForm.errors.note }</p>}
+                
               </div>
 
               <div className='w-full min-h-40 border rounded-xl'>
                 <p className='mt-2 border-b'>Logs</p>
-                <div className='p-4 space-y-2'>
-                  <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Asperiores tenetur fuga reiciendis ullam tempore cupiditate fugiat sapiente. Amet fuga, ab explicabo atque, natus accusantium quaerat, ullam molestiae iusto illo voluptas!</p>
-                  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ducimus eos fugiat reprehenderit! Quos veritatis repellendus suscipit iste autem dolores nemo voluptatibus fugit sint, aperiam quas ad iure dolorum nulla exercitationem!</p>
+                <div className='p-4 space-y-2 text-left'>
+                  {
+                    format(new Date(), "yy-LL-d") !== format(studySession.created_at, "yy-LL-d") && (
+                      <p className='mb-4 text-yellow-400'>Yesterday Notes.</p>
+                    )
+                  }
+
+                  {
+                    notes.length === 0 && (
+                      <p className='mb-4 text-red-500'>Empty Note Log.</p>
+                    )
+                  }
+                  
+                  {
+                    notes.map(note => (
+                      <p key={note.id} className='text-left'>
+                        {note.note}
+                      </p>
+                    ))
+                  }
                 </div>
               </div>
 

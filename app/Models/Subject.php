@@ -20,6 +20,6 @@ class Subject extends Model
     }
 
     public function pomodoros() {
-        return $this->belongsToMany(Pomodoro::class);
+        return $this->hasMany(Pomodoro::class);
     }
 }
