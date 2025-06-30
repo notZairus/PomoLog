@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout'
-import React, { useEffect, useRef } from 'react'
+import React, { MouseEvent, useEffect, useRef } from 'react'
 import { Head, usePage } from '@inertiajs/react'
-import { type BreadcrumbItem } from '@/types';
+import { Note, type BreadcrumbItem } from '@/types';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { sleep } from '@/helper';
@@ -19,11 +19,15 @@ const breadcrumbs: BreadcrumbItem[] = [
     }
 ];
 
+type UsePageProps = {
+    notes: Note[]
+}
+
 export default function show() {
-    const { notes } = usePage().props;
+    const { notes } = usePage<UsePageProps>().props;
 
     function printNotes(e: MouseEvent) {
-        const printBtn = e.target;
+        const printBtn: HTMLButtonElement = e.target as HTMLButtonElement;
 
         if (!printBtn) return;
         

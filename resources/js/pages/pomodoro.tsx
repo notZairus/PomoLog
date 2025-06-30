@@ -67,18 +67,17 @@ export default function pomodoro() {
     })
   }
 
+
+
   useEffect(() => {
     if (!started.current) return;
-
-    if (!studySession) {
-      studySessionForm.post('/study-session');
-      return;
-    }
     
     if (format(new Date(), "yy-LL-d") !== format(studySession.created_at, "yy-LL-d")) {
       studySessionForm.post('/study-session')
     }
   }, [started.current]);
+
+
 
   return (
     <>

@@ -70,5 +70,6 @@ export type Subject = {
 export type Note = {
     id: number,
     pomodoro_id: number,
-    note: string
+    note: string,
+    created_at: string,
 }
