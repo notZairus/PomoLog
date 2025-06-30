@@ -27,4 +27,8 @@ class NoteController extends Controller
             'note' => $request->get('note')
         ]);
     }
+
+    public function tite() {
+        dd(';tite');
+    }
 }

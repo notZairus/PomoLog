@@ -21,6 +21,14 @@ class PomodoroController extends Controller
     public function index()
     {
         $study_session = Auth::user()->study_sessions->last();
+
+        if (!$study_session) {
+            //create new study session
+            $study_session = StudySession::create([
+                'user_id' => Auth::user()->id
+            ]);
+        }
+
         $subjects = Auth::user()->subjects->map->only(['id', 'name']);
 
         $ss = StudySession::with('pomodoros')->where('user_id', Auth::user()->id)->get();

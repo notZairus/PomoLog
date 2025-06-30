@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 use App\Http\Controllers\PomodoroController;
@@ -22,18 +23,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::get('/pomodoro', [PomodoroController::class, 'index']);
-Route::post('/pomodoro', [PomodoroController::class, 'store']);
 
-Route::post('/subjects', [SubjectController::class, 'store']);
-
-Route::post('/notes', [NoteController::class, 'store']);
-
-Route::post('/study-session', [StudySessionController::class, 'store'])->middleware(['auth', 'verified']);
-
-
-
-Route::get('/history', [HistoryController::class, 'index']);
+Route::middleware(['auth', 'verified'])->group(function () {
+    
+    Route::get('/pomodoro', [PomodoroController::class, 'index']);
+    Route::post('/pomodoro', [PomodoroController::class, 'store']);
+    
+    Route::post('/subjects', [SubjectController::class, 'store']);
+    
+    Route::post('/notes', [NoteController::class, 'store']);
+    
+    Route::post('/study-session', [StudySessionController::class, 'store']);
+    
+    
+    Route::get('/history', [HistoryController::class, 'index']);
+    Route::get('/history/{id}', [HistoryController::class, 'show']);
+});
 
 
 

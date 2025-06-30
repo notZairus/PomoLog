@@ -9,7 +9,6 @@ import { toMinutesFormat } from '@/helper';
 import { type BreadcrumbItem, StudySession, Subject, Note } from '@/types';
 import { FormEvent, useEffect } from 'react';
 import states from '@/constants/states';
-import { sleep } from '@/helper';
 import {
   Select,
   SelectContent,
@@ -38,29 +37,21 @@ type UsePageProps = {
 
 export default function pomodoro() {
   const { studySession, subjects, completedPomodoro, notes } = usePage<UsePageProps>().props;
-
   const studySessionForm = useForm();
-  const pomodoroForm = useForm({ 
-    'subject_id': 0 
-  });
-  const noteForm = useForm({
-    'note': ""
-  })
+  const noteForm = useForm({ note: "" });
   
   const { 
-    state, setState,
-    timer, setTimer,
+    state,
+    timer,
     start, setStart,
     notice, setNotice,
-    pomodoroCount, setPomodoroCount,
-    started
+    pomodoroCount,
+    started,
+    handleSubjectChange,
+    subject
   } = usePomodoroContext();
   
-  const {
-    startBeepingSound, 
-    pauseBeepingSound,
-    startFlashSound
-  } = useSoundContext();
+  const { startBeepingSound, pauseBeepingSound } = useSoundContext();
 
 
   function toggleTimer() {
@@ -75,7 +66,6 @@ export default function pomodoro() {
       onFinish: () => noteForm.reset()
     })
   }
-  
 
   useEffect(() => {
     if (!started.current) return;
@@ -89,50 +79,6 @@ export default function pomodoro() {
       studySessionForm.post('/study-session')
     }
   }, [started.current]);
-
-  useEffect(() => {
-    if (!start) return;
-    if (started) started.current = true;
-
-    const interval = setInterval(() => { setTimer(prev => Math.floor(prev - 1))}, 1000);
-    
-    return () => clearInterval(interval);
-  }, [start]);
-
-  useEffect(() => {
-    if (timer === 5) {
-      startBeepingSound();
-      return; 
-    }
-
-    if (timer === 0) {
-      setStart(false);
-      setNotice(true);
-      
-      pauseBeepingSound();
-      startFlashSound();
-    }
-  }, [timer]); 
-  
-  useEffect(() => {
-    if (!notice) return;
-
-    sleep(5000).then(() => {
-
-      if (state === states.pomodoro) {
-        setState(pomodoroCount < 3 ? states.short_break : states.long_break);
-        setTimer(pomodoroCount < 3 ? states.short_break.time : states.long_break.time);
-        setPomodoroCount(prev => prev < 3 ? prev + 1 : 0);
-        pomodoroForm.post('/pomodoro');
-      } else {
-        setState(states.pomodoro);
-        setTimer(states.pomodoro.time);
-      }
-
-      setNotice(false);
-      setStart(true);
-    });
-  }, [notice])
 
   return (
     <>
@@ -178,24 +124,32 @@ export default function pomodoro() {
             </div>
             
             <div className='bg-background flex-1 min-w-1/2 p-2 space-y-4 border rounded-xl'>
-              <Select 
-                onValueChange={(value) => pomodoroForm.setData('subject_id', Number(value)) } 
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Subject" />
-                </SelectTrigger>
-                <SelectContent>
-                  {
-                    subjects.map(subject => (
-                      <SelectItem key={subject.id} value={String(subject.id)} >
-                        {subject.name}
-                      </SelectItem>
-                    ))
-                  }
-                  <SubjectForm />
-                  
-                </SelectContent>
-              </Select>
+              <div className='flex space-x-4 items-center mt-2'>
+                <p className='text-gray-500'>Subject: </p>
+                <Select 
+                  disabled={state !== states.pomodoro}
+                  value={String(subject?.id)}
+                  onValueChange={(value) => {
+                    let sub = subjects.find((_sub) => _sub.id == Number(value));
+                    handleSubjectChange(sub as Subject);
+                  }} 
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Subject" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {
+                      subjects.map(subject => (
+                        <SelectItem key={subject.id} value={String(subject.id)} >
+                          {subject.name}
+                        </SelectItem>
+                      ))
+                    }
+                    <SubjectForm />
+                    
+                  </SelectContent>
+                </Select>
+              </div>
             
               <div className='w-full'>
                 <form onSubmit={submitNote} className='h-24 flex gap-4 items-start'>
@@ -220,7 +174,7 @@ export default function pomodoro() {
                 <p className='mt-2 border-b'>Logs</p>
                 <div className='p-4 space-y-2 text-left'>
                   {
-                    format(new Date(), "yy-LL-d") !== format(studySession.created_at, "yy-LL-d") && (
+                    format(new Date(), "yy-LL-d") !== format(studySession.created_at, "yy-LL-d") && notes.length > 0 && (
                       <p className='mb-4 text-yellow-400'>Yesterday Notes.</p>
                     )
                   }

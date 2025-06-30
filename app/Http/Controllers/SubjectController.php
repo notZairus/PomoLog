@@ -19,4 +19,17 @@ class SubjectController extends Controller
             'user_id' => $request->user()->id
         ]);
     }
+
+    public function show($id) {
+        $sub = Subject::with('pomodoros.notes')->find($id);
+        $notes = [];
+
+        foreach($sub->pomodoros as $pomodoro) {
+            array_push($notes, ...$pomodoro->notes->load('pomodoro.subject'));
+        }
+
+        return Inertia::render('subjects/show', [
+            'notes' => $notes,
+        ]);
+    }
 }
