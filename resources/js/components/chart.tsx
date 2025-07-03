@@ -19,7 +19,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 
-export default function chart({ studySessions }: { studySessions: StudySession[] }) {
+export default function Chart({ studySessions }: { studySessions: StudySession[] }) {
   const [chartData, setChartData] = useState<Data[] | undefined>(undefined);
   
   useEffect(() => {

@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 type Sort = "day" | "subject";
 
 interface usePageProps {
+    [key: string]: unknown, 
     studySessions: StudySession[],
     subjects: Subject[]
 }
@@ -28,10 +29,9 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function history() {
-    const { studySessions, subjects } = usePage().props;
+export default function History() {
+    const { studySessions, subjects } = usePage<usePageProps>().props;
     const [sortedBy, setSortedBy] = useState<Sort>("day");
-    const [firstMount, setFirstMount] = useState(true);
 
     useEffect(() => {
         if (!localStorage.getItem('sortBy')) {

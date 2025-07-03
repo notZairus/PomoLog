@@ -35,7 +35,7 @@ type UsePageProps = {
   notes: Note[]
 }
 
-export default function pomodoro() {
+export default function Pomodoro() {
   const { studySession, subjects, completedPomodoro, notes } = usePage<UsePageProps>().props;
   const studySessionForm = useForm();
   const noteForm = useForm({ note: "" });

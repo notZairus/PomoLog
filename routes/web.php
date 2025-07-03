@@ -23,24 +23,22 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {   
+        $pomodoros = Pomodoro::whereHas('study_session', function ($study_session) {
+            return $study_session->where('user_id', Auth::id());
+        })->get();
 
-    $pomodoros = Pomodoro::whereHas('study_session', function ($study_session) {
-        return $study_session->where('user_id', Auth::id());
-    })->get();
+        $notes = Note::wherehas('pomodoro.study_session', function ($study_session) {
+            return $study_session->where('user_id', Auth::id());
+        })->get();
+        
+        $study_session = StudySession::with('pomodoros')->where('user_id', Auth::id())->get();
 
-    $notes = Note::wherehas('pomodoro.study_session', function ($study_session) {
-        return $study_session->where('user_id', Auth::id());
-    })->get();
-    
-    $study_session = StudySession::with('pomodoros')->where('user_id', Auth::id())->get();
-
-    return Inertia::render('dashboard', [
-        'pomodoros' => $pomodoros,
-        'notes' => $notes,
-        'averageTime' => (count($pomodoros) * 25) / count($study_session),
-        'studySessions' => $study_session,
-    ]);
-
+        return Inertia::render('dashboard', [
+            'pomodoros' => $pomodoros,
+            'notes' => $notes,
+            'averageTime' => count($pomodoros) > 0 ? (count($pomodoros) * 25) / count($study_session) : 0,
+            'studySessions' => $study_session,
+        ]);
     })->name('dashboard');
 });
 

@@ -23,7 +23,7 @@ type UsePageProps = {
     notes: Note[]
 }
 
-export default function show() {
+export default function Show() {
     const { notes } = usePage<UsePageProps>().props;
 
     function printNotes(e: MouseEvent) {

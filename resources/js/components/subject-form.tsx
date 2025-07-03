@@ -3,7 +3,7 @@ import { useForm } from '@inertiajs/react';
 import { Input } from './ui/input';
 
 
-export default function subjectform() {
+export default function SubjectForm() {
     const { data, setData, post, reset } = useForm({
         'name': "",
     })
