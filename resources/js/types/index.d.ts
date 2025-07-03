@@ -59,12 +59,20 @@ export interface StatesType {
 
 export interface StudySession {
     id: number,
+    pomodoros?: Pomodoro[],
     created_at: string
 }
 
 export type Subject = {
     id: number,
     name: string
+}
+
+export type Pomodoro = {
+    id: number,
+    study_session_id: number,
+    subject_id: number,
+    created_at: string,
 }
 
 export type Note = {

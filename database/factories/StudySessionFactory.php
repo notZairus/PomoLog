@@ -19,7 +19,6 @@ class StudySessionFactory extends Factory
     {
         return [
             'user_id' => User::factory()->create(),
-            'date' => fake()->date(),
         ];
     }
 }

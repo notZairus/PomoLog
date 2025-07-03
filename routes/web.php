@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 use App\Http\Controllers\PomodoroController;
@@ -9,6 +10,10 @@ use App\Http\Controllers\StudySessionController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\HistoryController;
+
+use App\Models\Pomodoro;
+use App\Models\Note;
+use App\Models\StudySession;
 
 
 Route::get('/', function () {
@@ -18,7 +23,24 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {   
-        return Inertia::render('dashboard');
+
+    $pomodoros = Pomodoro::whereHas('study_session', function ($study_session) {
+        return $study_session->where('user_id', Auth::id());
+    })->get();
+
+    $notes = Note::wherehas('pomodoro.study_session', function ($study_session) {
+        return $study_session->where('user_id', Auth::id());
+    })->get();
+    
+    $study_session = StudySession::with('pomodoros')->where('user_id', Auth::id())->get();
+
+    return Inertia::render('dashboard', [
+        'pomodoros' => $pomodoros,
+        'notes' => $notes,
+        'averageTime' => (count($pomodoros) * 25) / count($study_session),
+        'studySessions' => $study_session,
+    ]);
+
     })->name('dashboard');
 });
 
