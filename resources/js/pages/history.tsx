@@ -13,7 +13,7 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 
 
-type Sort = "day" | "subject" | "count";
+type Sort = "day" | "subject";
 
 interface usePageProps {
     studySessions: StudySession[],
@@ -32,9 +32,6 @@ export default function history() {
     const { studySessions, subjects } = usePage().props;
     const [sortedBy, setSortedBy] = useState<Sort>("day");
     const [firstMount, setFirstMount] = useState(true);
-
-    console.log(studySessions);
-    console.log(subjects);
 
     useEffect(() => {
         if (!localStorage.getItem('sortBy')) {
@@ -115,7 +112,6 @@ export default function history() {
                             <SelectContent>
                                 <SelectItem value="day">day</SelectItem>
                                 <SelectItem value="subject">subject</SelectItem>
-                                <SelectItem value="count">count</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

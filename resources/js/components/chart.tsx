@@ -33,7 +33,7 @@ export default function chart({ studySessions }: { studySessions: StudySession[]
   }, []);
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+    <ChartContainer config={chartConfig} className="h-full w-full">
       <BarChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis

@@ -52,7 +52,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-                <div className="relative overflow-hidden rounded-xl border p-8">
+                <div className="relative max-h-[400px] md:max-h-[500px] overflow-hidden rounded-xl border p-8">
                     <Chart studySessions={studySessions} />
                 </div>
             </div>

@@ -29,9 +29,6 @@ class HistoryController extends Controller
             case 'subject':
                 return app(SubjectController::class)->show($id);
                 break;
-            case 'count':
-                return app(PomodoroController::class)->show($id);
-                break;
             default:
                 abort(404);
         }
