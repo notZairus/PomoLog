@@ -22,6 +22,7 @@ Route::get('/', function () {
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
     Route::get('dashboard', function () {   
         $pomodoros = Pomodoro::whereHas('study_session', function ($study_session) {
             return $study_session->where('user_id', Auth::id());
@@ -40,11 +41,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'studySessions' => $study_session,
         ]);
     })->name('dashboard');
-});
-
-
-
-Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::get('/pomodoro', [PomodoroController::class, 'index']);
     Route::post('/pomodoro', [PomodoroController::class, 'store']);
@@ -55,17 +51,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::post('/study-session', [StudySessionController::class, 'store']);
     
-    
     Route::get('/history', [HistoryController::class, 'index']);
     Route::get('/history/{id}', [HistoryController::class, 'show']);
 });
-
-
-
-
-
-
-
 
 
 require __DIR__.'/settings.php';
