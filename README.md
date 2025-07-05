@@ -1,6 +1,6 @@
 # PomoLog
 
-A web app that help students stay focused on their studies with a help of pomodoro timer and note-taking app combined. 
+A web app that help students stay focused on their studies with the help of pomodoro timer and note-taking app combined. 
 
 ## Demo
 
