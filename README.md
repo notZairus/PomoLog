@@ -2,20 +2,22 @@
 
 A web app that help students stay focused on their studies with the help of pomodoro timer and note-taking app combined. 
 
-## Demo
+
+## 🚀 Demo
 
 [Live Demo](https://www.pomolog.com)
 
-## Features
 
-- Pomodoro Timer
-- Note taking during breaks
-- Record Tracking and Statistics
-- Log History
-- Color Modes
-- Authentication and Authorization
+## ✨ Features
 
-## Installation
+- ⏲️ Pomodoro Timer
+- 📝 Note-taking during breaks
+- 📊 Record Tracking and Statistics
+- 📚 Log History
+- 🎨 Color Modes (e.g., light/dark)
+- 🔒 Authentication and Authorization
+
+## 📦 Installation
 
 1. Clone the repo:
     ```bash
